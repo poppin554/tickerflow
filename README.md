@@ -1,2 +1,5 @@
-1. Create a DE pipeline that obtains live price data from selected equities in google finance API. 
-2. Show the live PnL of portfolio based on the average price that is bought of that equity 
+1. Ingest live price of Fortune 100 companies (AMD, AAPL, MSFT) using API from alpha vantage, api key here (https://www.alphavantage.co/support/#api-key)
+2. Fetch live price using run_pipeline.py (change ticker as needed)
+3. Create tables from psql of the stock price vs portfolio holding. 
+4. Returned parquet file to load into postgres sql. 
+4.
