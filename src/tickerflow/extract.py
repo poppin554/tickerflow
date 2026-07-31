@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class RateLimitError(Exception):
     pass
 
-def fetch_quote_yfinance(symbol: str) -> dict:
+def fetch_quote_yfinance(symbol: str):
     try:
         ticker = yf.Ticker(symbol)
         info = ticker.fast_info  # lighter-weight than .info, fewer fields but faster
