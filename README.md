@@ -6,7 +6,8 @@ I built Tickerflow as part of my transition into Data Engineering after completi
 ## Getting Started
 
 ### Tech Stack
-**Language/Libraries:** Python, pandas, SQLAlchemy, requests, python-dotenv, pytest, yfinance
+**Language/Libraries:** Python, pandas, SQLAlchemy, requests, python-dotenv, pytest, yfinance 
+
 **Infrastructure:** PostgreSQL, Docker, Docker Compose
 
 ### Setup and running it
