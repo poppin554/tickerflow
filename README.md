@@ -51,6 +51,7 @@ tests/test_extract.py::test_fallback_to_yfinance_on_rate_limit PASSED           
   ```
 
 ## Project Structure
+```
 tickerflow/
 ├── src/
 │   └── tickerflow/
@@ -74,6 +75,7 @@ tickerflow/
 ├── requirements.txt          # all required dependencies to run tickerflow
 ├── README.md
 └── pyproject.toml            # or setup.py, marks src/ as installable
+```
 
 
 ## Status / Roadmap
