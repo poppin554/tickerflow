@@ -70,8 +70,8 @@ tickerflow/
 │   └── manual_load_check.py  # manually load mock data into Postgres without costing API. 
 ├── .env.example              # documents required env vars, no real secrets
 ├── .gitignore
-├── docker-compose.yml
-├── Dockerfile
+├── docker-compose.yml        # tickerflow postgresql + pipeline setup
+├── Dockerfile                # Definition to build docker image
 ├── requirements.txt          # all required dependencies to run tickerflow
 ├── README.md
 └── pyproject.toml            # or setup.py, marks src/ as installable
