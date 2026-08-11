@@ -53,6 +53,12 @@ tests/test_extract.py::test_fallback_to_yfinance_on_rate_limit PASSED           
 ## Project Structure
 ```
 tickerflow/
+├── airflow/
+│   ├── dags/
+│       └── tickerflow_dag.py # DAG file for airflow to orchestrate scheduled tickerflow runs
+│   ├── Dockerfile            # Definition to build docker image with airflow requirements         
+│   ├── docker-compose.yaml   # Airflow + Docker setup
+│   └── requirements.txt      # Tickerflow module requirements in airflow setup
 ├── src/
 │   └── tickerflow/
 │       ├── __init__.py
