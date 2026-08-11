@@ -79,9 +79,10 @@ tickerflow/
 
 
 ## Status / Roadmap
-- ✅ Phase 1: Python fundamentals — project structure, venv, config/secrets, error handling & logging, API integration, Parquet
-- ✅ Phase 2: ETL pipeline — Postgres load, SQL transformation, Git workflow, mocked testing
-- ✅ Phase 3: Docker — containerized pipeline, Docker Compose (Postgres + pipeline services), automated schema init
+- ✅ Phase 1: Python fundamentals - project structure, venv, config/secrets, error handling & logging, API integration, Parquet
+- ✅ Phase 2: ETL pipeline - Postgres load, SQL transformation, Git workflow, mocked testing
+- ✅ Phase 3: Docker - containerized pipeline, Docker Compose (Postgres + pipeline services), automated schema init
+- ✅ Phase 4: Airflow 
 - ⏳ Phase 4+: Airflow, data warehouse modeling, cloud deployment, Spark
 
 ## Known limitations
