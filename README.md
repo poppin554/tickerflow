@@ -82,8 +82,8 @@ tickerflow/
 - ✅ Phase 1: Python fundamentals - project structure, venv, config/secrets, error handling & logging, API integration, Parquet
 - ✅ Phase 2: ETL pipeline - Postgres load, SQL transformation, Git workflow, mocked testing
 - ✅ Phase 3: Docker - containerized pipeline, Docker Compose (Postgres + pipeline services), automated schema init
-- ✅ Phase 4: Airflow 
-- ⏳ Phase 4+: Airflow, data warehouse modeling, cloud deployment, Spark
+- ✅ Phase 4: Airflow - DAG orchestration, scheduling, task dependencies, API fallback handling, Docker networking, dependency management
+- ⏳ Phase 5+: data warehouse modeling, cloud deployment, Spark
 
 ## Known limitations
 * yfinance is not an official API and may break. Tickerflow primarily uses alpha vantage, with free tier api capped at 25 req per day. 
