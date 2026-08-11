@@ -21,5 +21,5 @@ class Settings:
 def load_settings():
     return Settings(
         api_key=os.environ["MARKET_API_KEY"],  # crashes loudly if missing — good
-        db_host=os.environ.get("DB_HOST", "localhost"),
+        db_host=os.environ.get("TICKERFLOW_DB_HOST", "localhost"),
         db_password=os.environ.get("DB_PASSWORD",""))

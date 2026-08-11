@@ -6,3 +6,6 @@ __pycache__/
 pipeline.log
 data/raw/
 data/processed/
+logs/
+airflow/logs/
+config/
