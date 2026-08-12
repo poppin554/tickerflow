@@ -93,5 +93,5 @@ tickerflow/
 
 ## Known limitations
 * yfinance is not an official API and may break. Tickerflow primarily uses alpha vantage, with free tier api capped at 25 req per day. 
-* No scheduled runs until Phase 4
+* No further plans for Phase 5+ now
 
