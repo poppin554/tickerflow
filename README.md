@@ -1,7 +1,7 @@
 #  Tickerflow
 
 Tickerflow is a data engineering project that ingests live stock market data, stores portfolio holdings, and calculates near real-time profit and loss (PnL) metrics. Built with Python, PostgreSQL, and automated data pipelines, the project demonstrates data ingestion, transformation, database management, and analytics workflows.
-I built Tickerflow as part of my transition into Data Engineering after completing a Master's in Aerospace Engineering and working as an automotive CAE Engineer.
+
 
 ## Getting Started
 
