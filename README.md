@@ -111,7 +111,7 @@ pytest tests/ -v
 ## Limitations
 - Alpha Vantage's free tier API key has request limits
 - ```yfinance``` is an unofficial source and may change without notice
-- Current pipeline only runs a fixed symbol
+- Current pipeline only runs a fixed set of symbols
 - Tickerflow currently reports PnL only in console, planned web dashboard interface.
 
 ## Design Decisions
