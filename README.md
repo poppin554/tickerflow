@@ -117,16 +117,16 @@ pytest tests/ -v
 ## Design Decisions
 > Choices that were made during the process of building tickerflow
 **Why land raw data in Parquet before loading to Postgres?**
-Extraction and loading are decoupled on purpose. If the DB load step fails, the raw fetch isn't lost — it's already on disk in a typed, columnar format. This also mirrors a common real-world pattern (raw landing zone → warehouse) rather than writing straight from the API response into a database table.
+- Extraction and loading are decoupled on purpose. If the DB load step fails, the raw fetch isn't lost — it's already on disk in a typed, columnar format. This also mirrors a common real-world pattern (raw landing zone → warehouse) rather than writing straight from the API response into a database table.
 
 **Why fall back to yfinance instead of just retrying Alpha Vantage?**
-Alpha Vantage's free tier cap (25 requests/day) is a hard limit, not a transient error — retrying with backoff wouldn't help. A second provider keeps the pipeline running end-to-end instead of failing outright, while the fallback event is still logged so the failure stays visible rather than silent.
+- Alpha Vantage's free tier cap (25 requests/day) is a hard limit, not a transient error — retrying with backoff wouldn't help. A second provider keeps the pipeline running end-to-end instead of failing outright, while the fallback event is still logged so the failure stays visible rather than silent.
 
 **Why compute P&L in SQL instead of pandas?**
-The join between `raw_quotes` and `holdings` happens where the data already lives, instead of pulling both tables into memory to merge in Python. It also keeps the transformation logic testable and inspectable as a standalone query, independent of the extraction code.
+- The join between `raw_quotes` and `holdings` happens where the data already lives, instead of pulling both tables into memory to merge in Python. It also keeps the transformation logic testable and inspectable as a standalone query, independent of the extraction code.
 
 **Why Airflow instead of a cron job or a simple scheduler loop?**
-The pipeline needed per-symbol task isolation (one symbol failing shouldn't block the others), explicit data handoff between tasks (XCom), and a `TriggerRule.ALL_DONE` PnL report that runs regardless of individual task outcomes. A cron job can't express that dependency graph or give per-task retry/observability — Airflow is the tool actually used for this in production DE work.
+- The pipeline needed per-symbol task isolation (one symbol failing shouldn't block the others), explicit data handoff between tasks (XCom), and a `TriggerRule.ALL_DONE` PnL report that runs regardless of individual task outcomes. A cron job can't express that dependency graph or give per-task retry/observability — Airflow is the tool actually used for this in production DE work.
 
 **Why Docker Compose instead of a single container?**
-Postgres and the pipeline are separate services with independent lifecycles (the DB should persist and start before the pipeline runs against it). Compose also matches how these are architected in practice, rather than bundling everything into one image.
+- Postgres and the pipeline are separate services with independent lifecycles (the DB should persist and start before the pipeline runs against it). Compose also matches how these are architected in practice, rather than bundling everything into one image.
