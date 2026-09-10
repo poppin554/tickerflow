@@ -24,3 +24,6 @@ Alpha Vantage ─┐
                ├─ Extract → Parquet landing zone → PostgreSQL → P&L report
 yfinance ──────┘                                      │
                                                       └─ Airflow scheduling
+```
+
+# Quick Start
