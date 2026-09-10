@@ -86,20 +86,20 @@ tickerflow/
 - The ```raw_quotes``` fetched by the designated API key can be found on psql or DBeaver. A successful pipeline run creates recent rows with a ```fetched_at``` timestamp
 
 ## Testing
-- Tests run against mocked provider responses to validate pipeline logic without consuming API quota (Does not consume API quota)
+- Tests run against mocked provider responses to validate pipeline logic without consuming API quota
 ```
 pip install -r requirements.txt
 pytest tests/ -v
 ```
 ## Current Capabilities
--✅ Market quote extraction
--✅ Primary-provider and fallback-provider logic
--✅ Parquet landing zone
--✅ PostgreSQL loading
--✅ Portfolio P&L query
--✅ Dockerized local environment
--✅ Airflow orchestration
--✅ Automated tests and CI
+- ✅ Market quote extraction
+- ✅ Primary-provider and fallback-provider logic
+- ✅ Parquet landing zone
+- ✅ PostgreSQL loading
+- ✅ Portfolio P&L query
+- ✅ Dockerized local environment
+- ✅ Airflow orchestration
+- ✅ Automated tests and CI
 
 ## Roadmap
 - Show portfolio holdings through an application interface
