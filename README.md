@@ -92,14 +92,14 @@ pip install -r requirements.txt
 pytest tests/ -v
 ```
 ## Current Capabilities
-✅ Market quote extraction
-✅ Primary-provider and fallback-provider logic
-✅ Parquet landing zone
-✅ PostgreSQL loading
-✅ Portfolio P&L query
-✅ Dockerized local environment
-✅ Airflow orchestration
-✅ Automated tests and CI
+-✅ Market quote extraction
+-✅ Primary-provider and fallback-provider logic
+-✅ Parquet landing zone
+-✅ PostgreSQL loading
+-✅ Portfolio P&L query
+-✅ Dockerized local environment
+-✅ Airflow orchestration
+-✅ Automated tests and CI
 
 ## Roadmap
 - Show portfolio holdings through an application interface
