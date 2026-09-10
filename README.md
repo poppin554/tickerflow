@@ -19,11 +19,14 @@ Tickerflow demonstrates a practical data-engineering workflow for financial data
 
 ## Architecture
 
-```text
-Alpha Vantage ─┐
-               ├─ Extract → Parquet landing zone → PostgreSQL → P&L report
-yfinance ──────┘                                      │
-                                                      └─ Airflow scheduling
+```mermaid
+graph LR
+    A[Alpha Vantage] --> E[Extract]
+    Y[yfinance<br/>fallback] --> E
+    E --> P[Parquet<br/>landing zone]
+    P --> D[(PostgreSQL)]
+    D --> R[P&L report]
+    S[Airflow<br/>scheduler] -.triggers.-> E
 ```
 
 # Quick Start
