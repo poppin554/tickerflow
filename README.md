@@ -117,16 +117,23 @@ pytest tests/ -v
 ## Design Decisions
 > Choices that were made during the process of building tickerflow
 **Why land raw data in Parquet before loading to Postgres?**
-- Extraction and loading are decoupled on purpose. If the DB load step fails, the raw fetch isn't lost — it's already on disk in a typed, columnar format. This also mirrors a common real-world pattern (raw landing zone → warehouse) rather than writing straight from the API response into a database table.
+- Extraction and loading are decoupled on purpose. If the DB load step fails, the raw fetch isn't lost, it's already on disk in a typed, columnar format. This also mirrors a common real-world pattern (raw landing zone → warehouse) rather than writing straight from the API response into a database table.
+
+
+**Why Parquet instead of CSV for the landing zone?**
+- CSV stores everything as comma separate texts, so the price column has to be split and reparsed every time it is read. Parquet keeps the actual data format and type so the problem doesn't appear downstream. The columnar feature that parquet provides also helps with the PnL query to pull specific columns instead of whole rows. Parquet also compress better than plain text. 
+
+**Why yfinance as the fallback provider?**
+- yfinance has no daily request cap and no API, so it is a cheap backup to add without having extra setups or quota to monitor. The only flaw is that it is an unofficial mirror around Yahoo Finance rather than a proper API. So it may break without warning with any updates from Yahoo Finance, which is fine because it's not something to rely on as a main source of data provider. 
 
 **Why fall back to yfinance instead of just retrying Alpha Vantage?**
-- Alpha Vantage's free tier cap (25 requests/day) is a hard limit, not a transient error — retrying with backoff wouldn't help. A second provider keeps the pipeline running end-to-end instead of failing outright, while the fallback event is still logged so the failure stays visible rather than silent.
+- Alpha Vantage's limit (25 requests/day) is a hard cap, not a temporary error, so retrying wouldn't fix anything. Switching providers lets the pipeline finish the run instead of just failing, and the switch still gets logged so it's not a silent failure.
 
 **Why compute P&L in SQL instead of pandas?**
-- The join between `raw_quotes` and `holdings` happens where the data already lives, instead of pulling both tables into memory to merge in Python. It also keeps the transformation logic testable and inspectable as a standalone query, independent of the extraction code.
+- The join between `raw_quotes` and `holdings` happens right where the data lives, instead of pulling both tables into Python just to merge them. It also means the PnL logic is its own testable query, separate from the extraction code.
 
 **Why Airflow instead of a cron job or a simple scheduler loop?**
-- The pipeline needed per-symbol task isolation (one symbol failing shouldn't block the others), explicit data handoff between tasks (XCom), and a `TriggerRule.ALL_DONE` PnL report that runs regardless of individual task outcomes. A cron job can't express that dependency graph or give per-task retry/observability — Airflow is the tool actually used for this in production DE work.
+- Each symbol needed to run as its own task so one failing doesn't take down the others, plus a way to pass data between tasks (XCom) and a PnL report step that runs regardless of upstream failures (`TriggerRule.ALL_DONE`). A cron job has no per-task isolation, no retries, no visibility into what failed. Also, Airflow is what's actually used for this kind of orchestration in DE roles.
 
-**Why Docker Compose instead of a single container?**
-- Postgres and the pipeline are separate services with independent lifecycles (the DB should persist and start before the pipeline runs against it). Compose also matches how these are architected in practice, rather than bundling everything into one image.
+**Why Docker Compose instead of one container?**
+- Postgres and the pipeline are two separate services with different lifecycles — the DB needs to be up and ready before the pipeline runs against it. Compose reflects how this is actually set up in practice, instead of cramming both into a single image.
