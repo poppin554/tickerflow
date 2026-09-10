@@ -1,98 +1,26 @@
-#  Tickerflow
+# Tickerflow
 
-Tickerflow is a project that ingests live stock market data, stores portfolio holdings, and calculates near real-time profit and loss (PnL) metrics. Built with Python, PostgreSQL, and automated data pipelines, the project demonstrates data ingestion, transformation, database management, and analytics workflows.
+> A Dockerized market-data pipeline that fetches equity quotes with provider fallback, stores price data in PostgreSQL, and calculates portfolio profit and loss.
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-data-336791)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED)
 
-## Getting Started
+Tickerflow demonstrates a practical data-engineering workflow for financial data:
 
-### Tech Stack
-**Language/Libraries:** Python, pandas, SQLAlchemy, requests, python-dotenv, pytest, yfinance 
+- Fetch live equity quotes from Alpha Vantage
+- Fall back to `yfinance` when the primary provider is rate-limited or unavailable
+- Save raw data to Parquet
+- Load quote history into PostgreSQL
+- Join quotes with holdings to calculate near-real-time P&L
+- Schedule the workflow with Airflow
 
-**Infrastructure:** PostgreSQL, Docker, Docker Compose
-
-### Setup and running it
-
-* Clone the repo
-* Copy .env.example to .env and fill in the real values
-* For MARKET_API_KEY: 
-* Get a free Alpha Vantage API key at https://www.alphavantage.co/support/#api-key (no credit card required) and set it as MARKET_API_KEY in .env.
-* run "docker-compose up --build"
-* Verify Postgres data: connect via DBeaver or psql to localhost:5432, database `tickerflow`, and check the `raw_quotes` table for rows with a recent `fetched_at` timestamp
-* The pipeline's final console output should show a printed PnL table for AMD, AAPL, and MSFT
-
-* Optional: Run DBeaver to browse the PnL easier.
-* data/ generated files are .gitignored. 
-
-
-## Testing
-* Tests runs locally (requires a local venv with "pip install -r requirements.txt")
-* run : pytest tests/ -v
-* Test used mocked API responses, so they run without using API quota. 
-* Expected output:
-```
-collected 3 items                                                                                                         
-
-tests/test_extract.py::test_fetch_quote_success PASSED                                                              [ 33%]
-tests/test_extract.py::test_fetch_quote_raises_on_rate_limit PASSED                                                 [ 66%]
-tests/test_extract.py::test_fallback_to_yfinance_on_rate_limit PASSED                                               [100%]
-```
+> This project is for education and portfolio tracking only. It does not execute trades or provide investment advice.
 
 ## Architecture
-  ```
-  Alpha Vantage (primary) / yfinance (fallback)
-          ↓
-      extract.py  →  Parquet landing (data/raw/)
-          ↓
-      load.py  →  Postgres (raw_quotes table)
-          ↓
-      transform.py  →  SQL PnL query (joins raw_quotes + holdings)
-          ↓
-      PnL report (printed to console)
-  ```
 
-## Project Structure
-```
-tickerflow/
-├── airflow/
-│   ├── dags/
-│       └── tickerflow_dag.py # DAG file for airflow to orchestrate scheduled tickerflow runs
-│   ├── Dockerfile            # Definition to build docker image with airflow requirements         
-│   ├── docker-compose.yaml   # Airflow + Docker setup
-│   └── requirements.txt      # Tickerflow module requirements in airflow setup
-├── src/
-│   └── tickerflow/
-│       ├── __init__.py
-│       ├── extract.py        # pulls data from API
-│       ├── transform.py      # cleans/reshapes data
-│       ├── load.py           # writes to DB/file
-│       └── config.py         # loads settings from env/.env
-├── db/                       
-│   └── init.sql			  # initialises database in new docker container
-├── tests/                    
-│   ├── test_transform.py	  # placeholder - not implemented
-│   └── test_extract.py		  # pulls fake_data to test pipeline (without API costs)
-├── scripts/                  
-│   ├── run_pipeline.py       # the actual entry point you execute
-│   └── manual_load_check.py  # manually load mock data into Postgres without costing API. 
-├── .env.example              # documents required env vars, no real secrets
-├── .gitignore
-├── docker-compose.yml        # tickerflow postgresql + pipeline setup
-├── Dockerfile                # Definition to build docker image
-├── requirements.txt          # all required dependencies to run tickerflow
-├── README.md
-└── pyproject.toml            # or setup.py, marks src/ as installable
-```
-
-
-## Status / Roadmap
-- ✅ Phase 1: Python fundamentals - project structure, venv, config/secrets, error handling & logging, API integration, Parquet
-- ✅ Phase 2: ETL pipeline - Postgres load, SQL transformation, Git workflow, mocked testing
-- ✅ Phase 3: Docker - containerized pipeline, Docker Compose (Postgres + pipeline services), automated schema init
-- ✅ Phase 4: Airflow - DAG orchestration, scheduling, task dependencies, API fallback handling, Docker networking, dependency management
-- ✅ Phase 5: CI: Automated tests + Docker build on every push
-- ⏳ Phase 6+: data warehouse modeling, cloud deployment, Spark, PowerBI interface
-
-## Known limitations
-* yfinance is not an official API and may break. Tickerflow primarily uses alpha vantage, with free tier api capped at 25 req per day. 
-* No further plans for Phase 6+ now
-
+```text
+Alpha Vantage ─┐
+               ├─ Extract → Parquet landing zone → PostgreSQL → P&L report
+yfinance ──────┘                                      │
+                                                      └─ Airflow scheduling
