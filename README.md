@@ -19,15 +19,77 @@ Tickerflow demonstrates a practical data-engineering workflow for financial data
 
 ## Architecture
 
-```mermaid
-graph LR
-    A[Alpha Vantage] --> E[Extract]
-    Y[yfinance<br/>fallback] --> E
-    E --> P[Parquet<br/>landing zone]
-    P --> D[(PostgreSQL)]
-    D --> R[P&L report]
-    S[Airflow<br/>scheduler] -.triggers.-> E
-```
+flowchart TD
+
+subgraph group_pipeline["Pipeline Runtime"]
+  node_local_compose{{"Local Docker Compose<br/>deployment<br/>[docker-compose.yml]"}}
+  node_pipeline_runner["Direct Pipeline Runner<br/>Python entry point<br/>[run_pipeline.py]"]
+  node_runtime_config["Environment Configuration<br/>Python config<br/>[config.py]"]
+  node_extract["Quote Extraction<br/>Python ETL stage<br/>[extract.py]"]
+  node_load["Quote Loader<br/>Python ETL stage<br/>[load.py]"]
+  node_transform["Portfolio P&amp;L Query<br/>Python reporting stage<br/>[transform.py]"]
+  node_root_dockerfile["Pipeline Image<br/>Docker build"]
+end
+
+subgraph group_data["Data Persistence"]
+  node_raw_parquet["Raw Parquet Landing Zone<br/>durable handoff"]
+  node_postgres[("PostgreSQL<br/>authoritative datastore")]
+  node_schema["Schema Bootstrap<br/>SQL schema<br/>[init.sql]"]
+end
+
+subgraph group_airflow["Scheduled Orchestration"]
+  node_airflow_compose{{"Airflow Environment<br/>container deployment"}}
+  node_airflow_dag["Tickerflow DAG<br/>Airflow workflow<br/>[tickerflow_dag.py]"]
+  node_airflow_dockerfile["Airflow Image<br/>Docker build"]
+end
+
+node_alpha_vantage(("Alpha Vantage<br/>market-data provider"))
+node_yfinance(("yfinance / Yahoo<br/>market-data fallback"))
+node_ci{{"CI<br/>automation workflow<br/>[ci.yml]"}}
+
+node_local_compose -->|"builds"| node_root_dockerfile
+node_local_compose -->|"starts"| node_postgres
+node_pipeline_runner -->|"runs first"| node_extract
+node_pipeline_runner -->|"runs next"| node_load
+node_pipeline_runner -->|"runs last"| node_transform
+node_runtime_config -->|"provides settings and API key"| node_extract
+node_extract -->|"requests primary quotes"| node_alpha_vantage
+node_extract -.->|"falls back on failure"| node_yfinance
+node_extract -->|"lands normalized quotes"| node_raw_parquet
+node_raw_parquet -->|"supplies retryable input"| node_load
+node_load -->|"writes quote history"| node_postgres
+node_schema -->|"initializes tables"| node_postgres
+node_transform -->|"queries quotes and holdings"| node_postgres
+node_airflow_compose -->|"builds"| node_airflow_dockerfile
+node_airflow_compose -->|"hosts"| node_airflow_dag
+node_airflow_dag -->|"coordinates per-symbol extraction"| node_extract
+node_airflow_dag -->|"runs report after upstream completion"| node_transform
+node_ci -.->|"validates runtime build"| node_root_dockerfile
+
+click node_local_compose "https://github.com/poppin554/tickerflow/blob/main/docker-compose.yml"
+click node_pipeline_runner "https://github.com/poppin554/tickerflow/blob/main/scripts/run_pipeline.py"
+click node_runtime_config "https://github.com/poppin554/tickerflow/blob/main/src/tickerflow/config.py"
+click node_extract "https://github.com/poppin554/tickerflow/blob/main/src/tickerflow/extract.py"
+click node_load "https://github.com/poppin554/tickerflow/blob/main/src/tickerflow/load.py"
+click node_schema "https://github.com/poppin554/tickerflow/blob/main/db/init.sql"
+click node_transform "https://github.com/poppin554/tickerflow/blob/main/src/tickerflow/transform.py"
+click node_airflow_compose "https://github.com/poppin554/tickerflow/blob/main/airflow/docker-compose.yaml"
+click node_airflow_dag "https://github.com/poppin554/tickerflow/blob/main/airflow/dags/tickerflow_dag.py"
+click node_root_dockerfile "https://github.com/poppin554/tickerflow/blob/main/Dockerfile"
+click node_airflow_dockerfile "https://github.com/poppin554/tickerflow/blob/main/airflow/Dockerfile"
+click node_ci "https://github.com/poppin554/tickerflow/blob/main/.github/workflows/ci.yml"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_local_compose,node_pipeline_runner,node_runtime_config,node_extract,node_load,node_transform,node_root_dockerfile toneBlue
+class node_raw_parquet,node_postgres,node_schema toneAmber
+class node_airflow_compose,node_airflow_dag,node_airflow_dockerfile toneMint
+class node_alpha_vantage,node_yfinance,node_ci toneNeutral
 
 # Quick Start
 Prerequisites
