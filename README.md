@@ -1,4 +1,4 @@
-# Tickerflow
+># Tickerflow
 
 > A Dockerized market-data pipeline that fetches equity quotes with provider fallback, stores price data in PostgreSQL, and calculates portfolio profit and loss.
 
@@ -157,6 +157,10 @@ tickerflow/
 pip install -r requirements.txt
 pytest tests/ -v
 ```
+
+## Expected Output
+![Earnings for three tickers](Result.png)
+
 ## Current Capabilities
 - ✅ Market quote extraction
 - ✅ Primary-provider and fallback-provider logic
