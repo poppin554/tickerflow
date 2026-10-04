@@ -186,6 +186,7 @@ pytest tests/ -v
 
 ## Design Decisions
 > Choices that were made during the process of building tickerflow
+> 
 **Why land raw data in Parquet before loading to Postgres?**
 - Extraction and loading are decoupled on purpose. If the DB load step fails, the raw fetch isn't lost, it's already on disk in a typed, columnar format. This also mirrors a common real-world pattern (raw landing zone → warehouse) rather than writing straight from the API response into a database table.
 
