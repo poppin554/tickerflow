@@ -176,6 +176,7 @@ pytest tests/ -v
 - Historical portfolio performance
 - Data-freshness and provider health-checks
 - Support for additional market-data sources and user-configurable symbols
+- Features to support scalling
 - Cloud deployment
 
 ## Limitations
