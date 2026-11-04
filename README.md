@@ -184,6 +184,8 @@ pytest tests/ -v
 - ```yfinance``` is an unofficial source and may change without notice
 - Current pipeline only runs a fixed set of symbols
 - Tickerflow currently reports PnL only in console, planned web dashboard interface.
+- No distributed processing (Use Apache Spark)
+- Single-machine execution, with more symbols need to distribute with Kubernetes or Celery
 
 ## Design Decisions
 > Choices that were made during the process of building tickerflow
